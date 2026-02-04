@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: churn-prediction-django
+    name: customer-churn-django
     env: python
     buildCommand: |
       pip install -r requirements.txt
       python manage.py migrate
-      python manage.py collectstatic --noinput
+      python manage.py collectstatic
     startCommand: gunicorn firstproject.wsgi:application
