@@ -2,15 +2,8 @@ services:
   - type: web
     name: customer-churn-django
     env: python
-    plan: free
-
     buildCommand: |
-      pip install -r requirements.txt &&
-      python manage.py migrate &&
+      pip install -r requirements.txt
+      python manage.py migrate
       python manage.py collectstatic --noinput
-
     startCommand: gunicorn firstproject.wsgi:application
-
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: firstproject.settings
