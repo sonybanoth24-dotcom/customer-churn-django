@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import predict_view
+from .views import predict   # ✅ correct function name
 
 urlpatterns = [
-    path("", predict_view, name="predict"),
+    path('', predict, name='predict'),
 ]

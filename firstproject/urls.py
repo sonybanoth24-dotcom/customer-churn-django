@@ -1,7 +1,16 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from users import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", include("users.urls")),
+    path('admin/', admin.site.urls),
+    path('', views.login_view, name='login'),
+    path('register/', views.register_view, name='register'),
+    path('logout/', views.logout_view, name='logout'),
+    path('predict/', views.predict, name='predict'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
