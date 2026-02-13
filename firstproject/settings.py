@@ -70,6 +70,8 @@ LOGIN_REDIRECT_URL = 'predict'
 LOGOUT_REDIRECT_URL = 'login'
 import os
 
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
 DEBUG = False
 
 ALLOWED_HOSTS = ['.onrender.com']
