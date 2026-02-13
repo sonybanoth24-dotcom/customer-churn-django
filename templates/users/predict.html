@@ -1,25 +1,32 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Customer Churn Prediction</title>
 
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
         }
 
-        .container {
-            width: 500px;
-            margin: 60px auto;
+        .card {
             background: white;
-            padding: 30px;
+            padding: 40px;
+            width: 500px;
             border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
             text-align: center;
         }
 
@@ -28,8 +35,8 @@
         }
 
         input {
-            width: 90%;
-            padding: 10px;
+            width: 100%;
+            padding: 12px;
             margin: 10px 0;
             border-radius: 8px;
             border: 1px solid #ccc;
@@ -38,12 +45,12 @@
         button {
             background: #667eea;
             color: white;
-            padding: 10px 25px;
+            padding: 12px 25px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
+            margin-top: 15px;
+            font-weight: 600;
         }
 
         button:hover {
@@ -52,78 +59,62 @@
 
         .result {
             margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
-        .stay {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .churn {
-            background: #f8d7da;
-            color: #721c24;
+            font-weight: 600;
+            font-size: 18px;
         }
 
         canvas {
-            margin-top: 30px;
+            margin-top: 25px;
         }
     </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="card">
     <h1>Customer Churn Prediction</h1>
 
     <form method="POST">
         {% csrf_token %}
         <input type="number" name="age" placeholder="Enter Age" required>
         <input type="number" name="balance" placeholder="Enter Balance" required>
-        <br>
         <button type="submit">Predict</button>
     </form>
 
     {% if prediction %}
-        <div class="result {% if churn_value == 0 %}stay{% else %}churn{% endif %}">
+        <div class="result">
             {{ prediction }}
         </div>
 
         <canvas id="churnChart"></canvas>
 
         <script>
-            const churnValue = {{ churn_value|default:0 }};
-            const probability = churnValue === 1 ? 80 : 20;
-
             const ctx = document.getElementById('churnChart');
 
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Churn Probability'],
+                    labels: ['Stay', 'Churn'],
                     datasets: [{
-                        label: 'Risk %',
-                        data: [probability],
-                        backgroundColor: churnValue === 1 ? '#dc3545' : '#28a745'
+                        label: 'Prediction Probability',
+                        data: [{{ stay_prob }}, {{ churn_prob }}],
+                        borderWidth: 1
                     }]
                 },
                 options: {
+                    responsive: true,
                     animation: {
                         duration: 1500
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 100
+                            max: 1
                         }
                     }
                 }
             });
         </script>
     {% endif %}
-
 </div>
 
 </body>
