@@ -2,6 +2,9 @@
 <html>
 <head>
     <title>Customer Churn Prediction</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,21 +15,21 @@
 
         .container {
             width: 500px;
-            margin: 80px auto;
+            margin: 60px auto;
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 15px;
-            box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             text-align: center;
         }
 
         h1 {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         input {
-            width: 100%;
-            padding: 12px;
+            width: 90%;
+            padding: 10px;
             margin: 10px 0;
             border-radius: 8px;
             border: 1px solid #ccc;
@@ -35,11 +38,12 @@
         button {
             background: #667eea;
             color: white;
+            padding: 10px 25px;
             border: none;
-            padding: 12px 25px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -47,32 +51,29 @@
         }
 
         .result {
-            margin-top: 25px;
-            padding: 15px;
-            border-radius: 10px;
-            background: #f2f2f2;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
             font-weight: bold;
         }
 
-        .logout {
-            position: absolute;
-            top: 20px;
-            right: 30px;
+        .stay {
+            background: #d4edda;
+            color: #155724;
         }
 
-        .logout a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
+        .churn {
+            background: #f8d7da;
+            color: #721c24;
         }
 
+        canvas {
+            margin-top: 30px;
+        }
     </style>
 </head>
-<body>
 
-<div class="logout">
-    <a href="{% url 'logout' %}">Logout</a>
-</div>
+<body>
 
 <div class="container">
     <h1>Customer Churn Prediction</h1>
@@ -81,14 +82,48 @@
         {% csrf_token %}
         <input type="number" name="age" placeholder="Enter Age" required>
         <input type="number" name="balance" placeholder="Enter Balance" required>
+        <br>
         <button type="submit">Predict</button>
     </form>
 
     {% if prediction %}
-        <div class="result">
+        <div class="result {% if churn_value == 0 %}stay{% else %}churn{% endif %}">
             {{ prediction }}
         </div>
+
+        <canvas id="churnChart"></canvas>
+
+        <script>
+            const churnValue = {{ churn_value|default:0 }};
+            const probability = churnValue === 1 ? 80 : 20;
+
+            const ctx = document.getElementById('churnChart');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Churn Probability'],
+                    datasets: [{
+                        label: 'Risk %',
+                        data: [probability],
+                        backgroundColor: churnValue === 1 ? '#dc3545' : '#28a745'
+                    }]
+                },
+                options: {
+                    animation: {
+                        duration: 1500
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        </script>
     {% endif %}
+
 </div>
 
 </body>
