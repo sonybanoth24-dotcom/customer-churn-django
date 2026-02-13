@@ -1,114 +1,97 @@
-{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Customer Churn Prediction</title>
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            font-family: Arial;
+            background: linear-gradient(135deg,#667eea,#764ba2);
+            margin:0;
         }
 
-        .card {
-            background: white;
-            padding: 40px;
-            width: 500px;
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            text-align: center;
+        .topbar {
+            position:absolute;
+            top:20px;
+            right:30px;
+            color:white;
         }
 
-        h1 {
-            margin-bottom: 25px;
+        .topbar a {
+            color:white;
+            text-decoration:none;
+            margin-left:10px;
+        }
+
+        .container {
+            width:500px;
+            margin:100px auto;
+            background:white;
+            padding:30px;
+            border-radius:15px;
+            text-align:center;
         }
 
         input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+            width:100%;
+            padding:10px;
+            margin:10px 0;
         }
 
         button {
-            background: #667eea;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 15px;
-            font-weight: 600;
-        }
-
-        button:hover {
-            background: #5a67d8;
+            padding:10px 20px;
+            background:#667eea;
+            color:white;
+            border:none;
+            border-radius:6px;
         }
 
         .result {
-            margin-top: 20px;
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        canvas {
-            margin-top: 25px;
+            margin-top:15px;
+            font-weight:bold;
         }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h1>Customer Churn Prediction</h1>
+<div class="topbar">
+    Welcome {{ request.user.username }} |
+    <a href="{% url 'logout' %}">Logout</a>
+</div>
+
+<div class="container">
+    <h2>Customer Churn Prediction</h2>
 
     <form method="POST">
         {% csrf_token %}
-        <input type="number" name="age" placeholder="Enter Age" required>
-        <input type="number" name="balance" placeholder="Enter Balance" required>
+        <input type="number" step="any" name="age" placeholder="Enter Age" required>
+        <input type="number" step="any" name="balance" placeholder="Enter Balance" required>
         <button type="submit">Predict</button>
     </form>
 
     {% if prediction %}
-        <div class="result">
-            {{ prediction }}
-        </div>
+        <div class="result">{{ prediction }}</div>
 
-        <canvas id="churnChart"></canvas>
+        <canvas id="myChart"></canvas>
 
         <script>
-            const ctx = document.getElementById('churnChart');
+            const ctx = document.getElementById('myChart');
 
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Stay', 'Churn'],
+                    labels: ['Stay %', 'Churn %'],
                     datasets: [{
                         label: 'Prediction Probability',
                         data: [{{ stay_prob }}, {{ churn_prob }}],
-                        borderWidth: 1
+                        backgroundColor: ['#4CAF50', '#f44336']
                     }]
                 },
                 options: {
-                    responsive: true,
-                    animation: {
-                        duration: 1500
-                    },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 1
+                            max: 100
                         }
                     }
                 }
